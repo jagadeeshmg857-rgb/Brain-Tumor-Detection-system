@@ -40,10 +40,13 @@ def _initialize_firebase(self):
         self.db = firestore.client()
         print("Firebase initialized successfully")
 
-    except Exception as e:
+     except Exception as e:
         self.db = None
         print(f"Firebase initialization error: {e}")
-
+        st.error(
+            "Firebase initialization failed. "
+            "Please check the app logs."
+        )
     
     def sign_up(self, email: str, password: str, name: str) -> Dict[str, Any]:
         """
