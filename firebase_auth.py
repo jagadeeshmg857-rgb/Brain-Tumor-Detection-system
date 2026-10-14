@@ -20,30 +20,30 @@ class FirebaseAuth:
         self.db = None
         self._initialize_firebase()
     
-    def _initialize_firebase(self):
-        """
-        Initialize Firebase Admin SDK.
-        """
-        try:
-            # Check if Firebase is already initialized
-            if not firebase_admin._apps:
-                # For development, you can use a service account key file
-                # In production, use environment variables or other secure methods
-                if os.path.exists('firebase-service-account.json'):
-                    cred = credentials.Certificate('firebase-service-account.json')
-                    firebase_admin.initialize_app(cred)
-                else:
-                    # Initialize with default credentials (for development)
-                    firebase_admin.initialize_app()
-            
-            # Initialize Firestore
-            self.db = firestore.client()
-            print("Firebase initialized successfully")
-            
-        except Exception as e:
-            print(f"Firebase initialization error: {e}")
-            # Fallback to session-based authentication for development
-            self.db = None
+   
+def _initialize_firebase(self):
+    """Initialize Firebase Admin SDK."""
+    try:
+        if not firebase_admin._apps:
+            if "firebase_service_account" not in st.secrets:
+                raise RuntimeError(
+                    "Firebase credentials are missing from Streamlit Secrets."
+                )
+
+            service_account_info = dict(
+                st.secrets["firebase_service_account"]
+            )
+
+            cred = credentials.Certificate(service_account_info)
+            firebase_admin.initialize_app(cred)
+
+        self.db = firestore.client()
+        print("Firebase initialized successfully")
+
+    except Exception as e:
+        self.db = None
+        print(f"Firebase initialization error: {e}")
+
     
     def sign_up(self, email: str, password: str, name: str) -> Dict[str, Any]:
         """
